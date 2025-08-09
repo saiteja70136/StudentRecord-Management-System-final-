@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head><title>Student List</title></head>
+<body>
+    <h2>All Students</h2>
+    <button style="background-color:green;height:50px;border-radius:10px;border:none;width:100px;color:white;font-weight:bold;" class="addstudentBtn">Add Student</button>
+    <button style="background-color:red;height:50px;border-radius:10px;border:none;width:100px;color:white;font-weight:bold;" class="logout">Logout</button>
+    <input style="padding-left:10px; margin-left:10px;height:50px;border:none;box-shadow:0 0 10px rgba(0,0,0,0.15);border-radius:10px" class="idtext" type="text" placeholder="enter student id"><button style="width:100px;height:50px;background-color:green;color:white;border-radius:10px;margin-left:10px;border:none" class="getstudentbyid">submit</button>
+    <div style="margin-top:10px" class="placestudentdetails"></div>
+    
+    <table border="1" id="students-table" cellpadding="7" cellspacing="0" width="50%" style="text-align:center;margin-top:10px;"></table>
+    <script>
+        document.querySelector('.logout').addEventListener('click',()=>{
+        	    dologout();
+        });
+        document.querySelector('.addstudentBtn').addEventListener('click',()=>{
+        	    window.location.href='/addstudent';
+        });
+        document.querySelector('.getstudentbyid').addEventListener('click',()=>{
+        	    let num=document.querySelector('.idtext').value;
+        	    getdatafromdb(num);
+        });
+        async function getdatafromdb(num){
+            try {
+                const response = await fetch("/getstudent/"+num, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                });
+                if (!response.ok)
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                const text = await response.text();
+                const result = text? JSON.parse(text):{};
+                if(Object.keys(result).length!==0){
+                	  let hold=document.createElement("div");
+                	  hold.innerHTML=`
+                	    <div>
+                	     <div><b style="color:blue;font-weight:bold;">Name: </b>${result.name}</div>
+                	     <div><b style="color:blue;font-weight:bold;">age: </b>${result.age}</div>
+                	     <div><b style="color:blue;font-weight:bold;">email: </b>${result.email}</div>
+                	     <div><b style="color:blue;font-weight:bold;">student id: </b>${result.id}</div>
+                	    </div> 
+                	   `
+                	  document.querySelector('.placestudentdetails').innerHTML=hold.innerHTML;
+                }else
+              	  document.querySelector('.placestudentdetails').innerHTML="invalid credentials";
+             } catch (error) {
+                console.error("Error adding student:", error);
+             }      	    
+        }
+        fetch('/getallstudents')
+        .then(res => res.json())
+        .then(data => {
+            let table = `<tr><th>ID</th><th>Name</th><th>Age</th><th>Email</th><th colspan=2>Actions</th></tr>`;
+            data.forEach(stu => {
+                table += 
+                	`<tr>
+                    <td>${stu.id}</td>
+                    <td>${stu.name}</td>
+                    <td>${stu.age}</td>
+                    <td>${stu.email}</td>
+                    <td>
+                   		<button style="font-weight:bold; background-color:green;border:none;width:100px;height:50px;border-radius:10px;color:white;" onclick="updateStudent(${stu.id})">Update</button>
+                    </td>
+                    <td>
+                        <button style="font-weight:bold; background-color:red;border:none;width:100px;height:50px;border-radius:10px;color:white;" onclick="deleteStudent(${stu.id})">Delete</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById("students-table").innerHTML = table;
+        });
+	    function updateStudent(id) {
+	    	    window.location.href="/updateform/"+id;
+	    }
+	    function deleteStudent(id) {
+	        fetch('/deletee/'+id, {
+	            method: 'DELETE'
+	        }).then(() => location.reload());
+	    }
+	    function dologout(){
+            window.location.href="/logout";
+	    }
+    </script>
+</body>
+</html>
