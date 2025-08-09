@@ -18,7 +18,7 @@ A simple Student Record Management System built with Java and Spring Boot. This 
 - Java
 - Spring Boot
 - Spring MVC
-- Spring Data JPA
+- **Spring Data JPA** (for ORM and database operations)
 - Spring Security (in-memory authentication)
 - **MySQL Database**
 - Thymeleaf/HTML
@@ -79,7 +79,7 @@ A simple Student Record Management System built with Java and Spring Boot. This 
 > server.port=8082
 > ```
 
-> The application uses MySQL as the database. Ensure your MySQL server is running and the database credentials are correct.
+> The application uses **Spring Data JPA** with **MySQL** as the database. Ensure your MySQL server is running and the database credentials are correct.
 
 ## License
 
